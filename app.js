@@ -142,6 +142,16 @@ function updateDisplay(entry) {
         }
         input = evaluate(input);
     } else if (entry == "backspace") {
+        if (input.length > 1) {
+            var i = input.length - 2;
+            //ensures we can't add another decimal after deleting an operator
+            while (i >= 0 && !operators.includes(input[i])) { 
+                if (input[i] == ".") {
+                    curr_decimal = true;
+                }
+                i -= 1;
+            }
+        }
         if (input.slice(-1) == ".") {
             curr_decimal = false;
         }
@@ -151,8 +161,11 @@ function updateDisplay(entry) {
         }
     } else if (input.length > 25) {
         return; //ensures we don't have an input that exceeds the UI limit
+    } else if (["e", "π"].includes(input.slice(-1)) && entry == ".") {
+        return; //cannot add a decimal after a special number
     } else if (entry == "c") {
         input = "0";
+        curr_decimal = false;
     } else if (["e", "π"].includes(entry)
         && (/^-?\d+$/.test(input.slice(-1)) 
         || ["e", "π"].includes(input.slice(-1)))
@@ -177,6 +190,8 @@ function updateDisplay(entry) {
     } else if (entry == "(" && !operators.includes(input.slice(-1))) { 
         //if open paranthesis is used without an operator before, add a multiplication symbol before the open paranthesis
         input = input + "x" + entry;
+    } else if (operators.includes(entry) && input.slice(-1) == ".") {
+        return; //cannot add an operator right after a decimal point
     } else {
         if (operators.includes(entry) && entry != "%") { 
             //if we used a new operator, we can use a decimal again since we are constructing a new number
