@@ -7,7 +7,7 @@ var curr_decimal = false;
 /** The valid key presses that can be used. */
 var valid_keys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
                  "/", "*", "x", "-", "+", "=", "%",
-                  "(", ")", "c", ".", "backspace", "enter"
+                  "(", ")", "c", ".", "backspace", "enter", "^", "e", "p"
                 ];
             
 /** Simplifies the expression stored in s (input).
@@ -32,6 +32,8 @@ function evaluate(s) {
                 stack.push(-num);
             } else if (sign == "*") {
                 stack[stack.length - 1] = stack[stack.length - 1] * num;
+            } else if (sign == "^") {
+                stack[stack.length - 1] = Math.pow(stack[stack.length - 1], num);
             } else if (sign == "/") {
                 if (num != 0) {
                     stack[stack.length - 1] = stack[stack.length - 1] / num;
@@ -53,6 +55,12 @@ function evaluate(s) {
             if (char === " ") {
                 i += 1;
                 continue;
+            } else if (["e", "π"].includes(char)) {
+                if (char == "e") {
+                    num = Math.E;
+                } else {
+                    num = Math.PI;
+                }
             } else if (char == ".") {
                 i+= 1;
                 char = s[i];
@@ -72,7 +80,7 @@ function evaluate(s) {
                 i -= 1;
             } else if (/^-?\d+$/.test(char)) { //if character is a digit
                 num = num * 10 + parseInt(char);
-            } else if (["+", "-", "/", "*"].includes(char)) {
+            } else if (["+", "-", "/", "*", "^"].includes(char)) {
                 /** Manages the division by zero error. */
                 if (!update(sign)) {
                     return 0;
@@ -125,9 +133,10 @@ function validate() {
 /**Updates the calculator display. Evalutes the expression if the equals
 * button is pressed. */
 function updateDisplay(entry) {
-    var operators = ["×", "/", "+", "-", "%", "x", "*"];
+    var operators = ["×", "/", "+", "-", "%", "x", "*", "^"];
 
     if (entry == "=" || entry == "enter") {
+        // validates the paranthesis used
         if (!validate()) {
             return;
         }
@@ -141,32 +150,41 @@ function updateDisplay(entry) {
             input = "0";
         }
     } else if (input.length > 25) {
-        return;
+        return; //ensures we don't have an input that exceeds the UI limit
     } else if (entry == "c") {
         input = "0";
-    } else if (input.length == 1 && input == 0 && entry == "." && !curr_decimal) {
+    } else if (["e", "π"].includes(entry)
+        && (/^-?\d+$/.test(input.slice(-1)) 
+        || ["e", "π"].includes(input.slice(-1)))
+         && input != 0) { //if the number is e and the previous entry is not an operator and the input is not zero, multiply e by
+            //the previous number
+        input = input + "x" + entry;
+    } else if (input.length == 1 && input == 0 && entry == "." && !curr_decimal) { //adds a decimal
         input = input + "."
         curr_decimal = true;
-    } else if (input.length == 1  && input != "(" && input == 0) {
+    } else if (input.length == 1  && input != "(" && input == 0) { 
+        // replace the current input that is zerowith a negative sign or a number
         if (entry == "-" || !operators.includes(entry)) {
             input = entry;
         }
     } else if (operators.includes(entry) && operators.includes(input.slice(-1))) {
             return; /** Only one operator can be used at a time. One operator cannot be followed by another operator. */
-    } else if (entry == "." && curr_decimal) {
+    } else if (entry == "." && curr_decimal) { //cannot add more than one decimal per number
             return;
-    } else if (entry == ".") {
+    } else if (entry == ".") { //adds a decimal to the current number, making it a floating point number 
         input += entry;
         curr_decimal = true;
-    } else if (entry == "(" && !operators.includes(input.slice(-1))) {
+    } else if (entry == "(" && !operators.includes(input.slice(-1))) { 
+        //if open paranthesis is used without an operator before, add a multiplication symbol before the open paranthesis
         input = input + "x" + entry;
     } else {
-        if (operators.includes(entry) && entry != "%") {
+        if (operators.includes(entry) && entry != "%") { 
+            //if we used a new operator, we can use a decimal again since we are constructing a new number
             curr_decimal = false;
         }
         input = input + `${entry}`;
     }
-    document.getElementById("input").innerHTML = input;
+    document.getElementById("input").innerHTML = input; //update the calculator input display
 }
 
 /** An event listener to support button click input. */
@@ -180,6 +198,8 @@ document.addEventListener('keydown', (e) => {
     if (valid_keys.includes(e.key.toLowerCase())) {
         if (e.key == "*") {
             updateDisplay("×");
+        } else if (e.key == "p") {
+            updateDisplay("π");
         } else {
             updateDisplay(e.key.toLowerCase());
         }

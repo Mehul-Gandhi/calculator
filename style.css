@@ -18,9 +18,10 @@ main {
     align-items: flex-start;
     justify-content: center;
     border: solid orange;
-    padding: 20px;
+    padding: 10px;
     background-color: black;
     flex: 1;
+    margin-left: 500px;
 }
 
 .row {
@@ -125,4 +126,18 @@ main {
 }
 .clear {
     color: lightcoral;
+}
+
+.extras {
+    display: flex;
+    flex: 1;
+    margin-top: 150px;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.extra {
+    display: flex;
+    flex: 1;
 }
