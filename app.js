@@ -176,7 +176,7 @@ function updateDisplay(entry) {
         input = input + "."
         curr_decimal = true;
     } else if (input.length == 1  && input != "(" && input == 0) { 
-        // replace the current input that is zerowith a negative sign or a number
+        // replace the current input that is zero with a negative sign or a number
         if (entry == "-" || !operators.includes(entry)) {
             input = entry;
         }
