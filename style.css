@@ -29,6 +29,7 @@ main {
     justify-content: space-between;
     flex: 1;
     padding: 10px;
+    align-items: center;
 }
 
 .top {
@@ -49,35 +50,28 @@ main {
     font-weight: bold;
     border: solid grey;
     background-color: grey;
-    border-radius: 50%;
+    /* border-radius: 50%; */
 }
 
 .input, .backspace {
     /* border: solid grey; */
-    padding: 20px;
+    padding: 30px;
     width: 100px;
-    height: 50px;
+    height: 35px;
     background-color: grey;
     color: white;
     font-weight: bold;
     display: flex;
     align-items: center;
-    justify-content: center;
-
-}
-.backspace {
-    border-radius: 50%;
-    height: 60px;
 }
 
 .input {
-    width: 467px;
+    width: 445px;
     background-color: black;
     font-size: 36px;
+    justify-content: flex-start;
 }
-.backspace {
-    width: 98px;
-}
+
 
 .number {
     background-color: darkgrey;
